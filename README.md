@@ -53,7 +53,7 @@ private static void example() throws InvalidHeader, InvalidNeonException, IOExce
     System.out.println("DeepCompare: " + Neon.deepCompare(new Object(), new Object()));
     
     // Advanced usage examples like Zombie Cast and Deep Down Cast
-    object = Neon.zombieCast(new Vegetable(), Zombie.class); // Example of Zombie Cast
+    final Zombie zombie = Neon.zombieCast(new Vegetable(), Zombie.class); // Example of Zombie Cast
     final Vegetable vegetable = Neon.deepDownCast(new Carrot()); // Example of Deep Down Cast
 }
 ```
