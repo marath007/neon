@@ -1,6 +1,6 @@
-package engineer.number.neon.interfaces;
+package engineer.number.neon;
 
-abstract public class Deconstructor {
+public abstract class Deconstructor {
     public abstract void append(int value);
 
     public abstract void append(long value);
@@ -32,5 +32,9 @@ abstract public class Deconstructor {
             bytes[i] = value[i];
         }
         append(bytes);
+    }
+
+    public StringBuilder sb() {
+        return null;
     }
 }

@@ -1,11 +1,12 @@
-package engineer.number.neon.interfaces;
+package engineer.number.neon;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class StreamDeconstructor extends Deconstructor {
+class StreamDeconstructor extends Deconstructor {
     OutputStream stream;
+    //make a buffered deconstructor using string builder
 
     public StreamDeconstructor(OutputStream stream) {
         this.stream = stream;
@@ -72,5 +73,10 @@ public class StreamDeconstructor extends Deconstructor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

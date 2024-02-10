@@ -1,18 +1,19 @@
 package engineer.number.neon;
 
-import engineer.number.neon.interfaces.Deconstructor;
-import engineer.number.neon.interfaces.Fabricator;
-
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class Neon {
+    static final public HashSet<Class> ignoreTransientClasses = new HashSet<>();
     final static Method getRecordComponents;
     final static Method getType;
     final static Method getName;
@@ -50,6 +51,56 @@ public class Neon {
         getName = temp4;
     }
 
+    static public <T> T readObject(File file) throws IOException, InvalidHeader, InvalidNeonException {
+        return readObject(Files.newInputStream(file.toPath()));
+    }
+
+    static public <T> T readObject(InputStream file) throws InvalidHeader, InvalidNeonException {
+        return new Deneonizer().deneonize(file);
+    }
+
+    static public <T> T readObject(String s) throws InvalidHeader, InvalidNeonException {
+        return new Deneonizer().deneonize(s);
+    }
+
+    static public <T> T readObject(File file, Class<T> c) throws IOException, InvalidHeader, InvalidNeonException {
+        return readObject(Files.newInputStream(file.toPath()), c);
+    }
+
+    static public <T> T readObject(InputStream file, Class<T> c) throws InvalidHeader, InvalidNeonException {
+        return new Deneonizer().deneonize(file, c);
+    }
+
+    static public <T> T readObject(String s, Class<T> c) throws InvalidHeader, InvalidNeonException {
+        return new Deneonizer().deneonize(s, c);
+    }
+
+    static public void writeObjectToFile(Object o, File f) throws IOException, InvalidNeonException {
+        writeObjectToStream(o, Files.newOutputStream(f.toPath()));
+    }
+
+    static public void writeObjectToStream(Object o, OutputStream f) throws InvalidNeonException {
+        new Neonizer().neonize(o, f);
+    }
+
+    static public void writeObjectToBufferedStream(Object o, OutputStream f) throws InvalidNeonException, IOException {
+        new Neonizer().neonizeBuffered(o, f);
+    }
+
+    static public void writeObjectToThreadedStream(Object o, OutputStream f, Consumer<Boolean> onFinished) throws InvalidNeonException, IOException {
+        new Neonizer().neonizeThreaded(o, f, onFinished);
+    }
+
+    static public String writeObjectToString(Object o) throws InvalidNeonException {
+        return new Neonizer().neonize(o);
+
+    }
+
+    static public StringBuilder writeObjectToStringBuilder(Object o) throws InvalidNeonException {
+        return new Neonizer().neonizeBuilder(o);
+
+    }
+
     static public <T> T deepClone(T t) throws InvalidNeonException, InvalidHeader {
         return new Deneonizer().deneonize(new Neonizer().neonize(t));
     }
@@ -57,6 +108,14 @@ public class Neon {
     static public <T> T deepDownCast(T t) throws InvalidNeonException, InvalidHeader {
         return new Deneonizer().deneonize(new Neonizer().neonize(t), t.getClass().getSuperclass());
     }
+
+    static public <T, U> T zombieCast(U u, Class<T> clazz) throws InvalidNeonException, InvalidHeader {
+        return new Deneonizer().deneonize(new Neonizer().neonize(u), clazz);
+    }
+
+//    static public <V> void galvanise(V v, String s) throws InvalidNeonException, InvalidHeader {
+//        return new Deneonizer().galvanise(v,s);
+//    }
 
     static public <T, K> boolean deepCompare(T t, K k) throws InvalidNeonException {
         final String neonize1 = new Neonizer().neonize(t);
@@ -66,15 +125,23 @@ public class Neon {
 
     static void fillFieldList(Object o) {
         LinkedHashMap<String, Field> fields = new LinkedHashMap<>();
+        LinkedHashMap<String, Field> allFields = new LinkedHashMap<>();
         Field[] fields1 = o.getClass().getDeclaredFields();
         for (int i = 0; i < fields1.length; i++) {
             int modifiers = fields1[i].getModifiers();
-            if (!Modifier.isTransient(modifiers) && !Modifier.isStatic(modifiers)) {
+            if ((!Modifier.isTransient(modifiers) || ignoreTransientClasses.contains(o.getClass())) && !Modifier.isStatic(modifiers)) {
                 if (fields1[i].getName().startsWith("this$")) {
                     continue;
                 }
                 fields1[i].setAccessible(true);
                 fields.put(fields1[i].getName(), fields1[i]);
+            }
+            if (!Modifier.isStatic(modifiers)) {
+                if (fields1[i].getName().startsWith("this$")) {
+                    continue;
+                }
+                fields1[i].setAccessible(true);
+                allFields.put(fields1[i].getName(), fields1[i]);
             }
         }
         Class sup = o.getClass().getSuperclass();
@@ -82,12 +149,19 @@ public class Neon {
             Field[] fields2 = sup.getDeclaredFields();
             for (int i = 0; i < fields2.length; i++) {
                 int modifiers = fields2[i].getModifiers();
-                if (!Modifier.isTransient(modifiers) && !Modifier.isStatic(modifiers)) {
+                if ((!Modifier.isTransient(modifiers)) && !Modifier.isStatic(modifiers)) {
                     if (fields2[i].getName().startsWith("this$")) {
                         continue;
                     }
                     fields2[i].setAccessible(true);
                     fields.put(fields2[i].getName(), fields2[i]);
+                }
+                if (!Modifier.isStatic(modifiers)) {
+                    if (fields2[i].getName().startsWith("this$")) {
+                        continue;
+                    }
+                    fields2[i].setAccessible(true);
+                    allFields.put(fields2[i].getName(), fields2[i]);
                 }
             }
             sup = sup.getSuperclass();
@@ -114,8 +188,8 @@ public class Neon {
     }
 
     static public class NeonConfig {
-        transient int indentLevel = 0;
         public boolean makePretty = false;
+        transient int indentLevel = 0;
 
         public NeonConfig(boolean makePretty) {
             this.makePretty = makePretty;

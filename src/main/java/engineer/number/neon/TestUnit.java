@@ -2,63 +2,21 @@ package engineer.number.neon;
 //import com.google.gson.Gson;
 //import com.google.gson.GsonBuilder;
 
-import static engineer.number.neon.TestUnit.Car.Blue;
-
-import engineer.number.neon.interfaces.Deconstructor;
-import engineer.number.neon.interfaces.Fabricator;
-
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Optional;
+
+import static engineer.number.neon.Neon.ignoreTransientClasses;
 
 class TestUnit {
     //    static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     static Neonizer neonizer = new Neonizer(new Neon.NeonConfig(false), new Neon.ClassMapper());
     static Deneonizer deneonizer = new Deneonizer(new Neon.NeonConfig(false), new Neon.ClassMapper());
 
-    public static void main(String[] args) throws InvalidNeonException, InvalidHeader {
-        final Carrot o = new Carrot();
-        final Vegetable v = Neon.deepDownCast(o);
-
-        final String neonize = neonizer.neonize(o);
-        System.out.println(neonize);
-        final Object deneonize = deneonizer.deneonize(neonize, Vegetable.class);
-//        final Object deneonize = deneonizer.deneonize("NeonV2{~engineer.number.neon.TestUnit$Garden:0{{,f={~engineer.number.neon.TestUnit$Carrot:1{{,d={~java.lang.Integer:2{1}},e={~~2{1}},a={~~2{1}},b={~~2{1}},c={~~2{1}},~=}}},g={~~1{{,d={~~2{1}},e={~~2{1}},a={~~2{1}},b={~~2{1}},c={~~2{1}},~=}}},h={~~1{{,d={~~2{1}},e={~~2{1}},a={~~2{1}},b={~~2{1}},c={~~2{1}},~=}}},~=}}}");
-        System.out.println(deneonize);
-//        testArrays();
-//        if (true)return;
-//        final Neon.ClassMapper mapper = new Neon.ClassMapper();
-////        mapper.addCompressionEntry("java.util.ArrayList","AL");
-////        mapper.addCompressionEntry("java.lang.String","Ss");
-////        mapper.addCompressionEntry("java.util.HashMap","Hash");
-//        Neonizer neonizer = new Neonizer();
-//        Deneonizer deneonizer = new Deneonizer();
-//
-//        final ArrayList<Object> o = new ArrayList<>();
-//        o.add(1);
-//        o.add("2");
-//        o.add(4L);
-//        final Long[] e = {14861l, 14l, 1413l};
-//
-//            deneonizer.deneonize(neonizer.neonize(e),Double[].class);
-//
-//        o.add(e);
-//        o.add(new TestOne());
-//        o.add(new EggNog(true));
-//        final String s = neonizer.neonize(o);
-//        System.out.println(s);
-//        deneonizer.deneonize(s);
-//        try {
-//            System.out.println(neonizer.toString(new EggNog(true),new FileOutputStream("F:\\DevFolder\\IdeaProjects\\NumberEngineersAndroid\\neon\\src\\main\\java\\com\\numberengineer\\neon\\test.txt")));
-//        } catch (FileNotFoundException fileNotFoundException) {
-//            fileNotFoundException.printStackTrace();
-//        }
-//        testArrays();
-//        testClass(new Arrrrr(true));
-//        testClass(new EggNog());
-//        testClass(new EggNog(true));
-//        testClass(new Origami());
-//        testClass(new Origami(true));
-    }
 
     private static void testArrays() throws InvalidNeonException {
         final Neon.ClassMapper mapper = new Neon.ClassMapper();
@@ -73,7 +31,7 @@ class TestUnit {
 //        System.out.println(neonizer.neonize(Blue));
         HashMap<Object, String> stringStringHashMap = new HashMap<>();
         stringStringHashMap.put("a", "1");
-        stringStringHashMap.put(1l, "2");
+        stringStringHashMap.put(Optional.of(1L), "2");
         stringStringHashMap.put("c", "3");
         System.out.println(neonizer.neonize(stringStringHashMap));
         final ArrayList<String> o = new ArrayList<>();
@@ -93,16 +51,16 @@ class TestUnit {
         System.out.println(neonizer.neonize(new int[][]{{1, 5, 6}, {1, 5, 6}, {1, 5, 6}}));
         System.out.println(neonizer.neonize(new long[]{14861l, 14l, 1413l}));
         System.out.println(neonizer.neonize(new long[][]{{14861l, 14L, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}));
-        System.out.println(neonizer.neonize(new long[][][]{{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
-        System.out.println(neonizer.neonize(new Long[]{14861l, 14l, 1413l}));
-        System.out.println(neonizer.neonize(new Long[][]{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}));
-        System.out.println(neonizer.neonize(new Long[][][]{{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
-        System.out.println(neonizer.neonize(new double[]{14861l, 14l, 1413l}));
-        System.out.println(neonizer.neonize(new double[][]{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}));
-        System.out.println(neonizer.neonize(new double[][][]{{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
-        System.out.println(neonizer.neonize(new Double[]{14861d, 14d, 1413d}));
-        System.out.println(neonizer.neonize(new Double[][]{{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}));
-        System.out.println(neonizer.neonize(new Double[][][]{{{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}, {{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}, {{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}}));
+        System.out.println(neonizer.neonize(new long[][][]{{{14861L, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
+//        System.out.println(neonizer.neonize(new Long[]{14861l, 14l, 1413l}));
+//        System.out.println(neonizer.neonize(new Long[][]{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}));
+//        System.out.println(neonizer.neonize(new Long[][][]{{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
+//        System.out.println(neonizer.neonize(new double[]{14861l, 14l, 1413l}));
+//        System.out.println(neonizer.neonize(new double[][]{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}));
+//        System.out.println(neonizer.neonize(new double[][][]{{{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}, {{14861l, 14l, 1413l}, {14862121l, 1421l, 14343l}, {14454861l, 614l, 141423l}}}));
+//        System.out.println(neonizer.neonize(new Double[]{14861d, 14d, 1413d}));
+//        System.out.println(neonizer.neonize(new Double[][]{{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}));
+//        System.out.println(neonizer.neonize(new Double[][][]{{{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}, {{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}, {{14861d, 14d, 1413d}, {14862121d, 1421d, 14343d}, {14454861d, 614d, 141423d}}}));
     }
 
     private static void testClass(Object o) throws InvalidNeonException {
@@ -113,6 +71,45 @@ class TestUnit {
 //        System.out.println(neonizer.testNeonStreamQuality(o));
     }
 
+    public static void main(String[] args) throws InvalidNeonException, InvalidHeader {
+        final String[] strings = new String[]{"egg", null, "nog"};
+        ignoreTransientClasses.add(BitSet.class);
+        final int pow = (int) Math.pow(7, 7);
+        final BitSet o1 = new BitSet(pow);
+        long x = System.currentTimeMillis();
+
+
+        x = System.currentTimeMillis();
+        String s;
+        for (int i = 0; i < pow; i += 2) {
+            o1.set(i);
+        }
+        x = System.currentTimeMillis();
+        s = Neon.writeObjectToString(o1);
+        System.out.println(System.currentTimeMillis() - x);
+        System.out.println(s.length());
+        for (int i = 1; i < pow; i += 2) {
+            o1.set(i);
+        }
+        x = System.currentTimeMillis();
+        s = Neon.writeObjectToString(o1);
+        System.out.println(System.currentTimeMillis() - x);
+        System.out.println(s.length());
+        final BitSet o2 = Neon.readObject(s);
+        o1.get(2);
+        o2.cardinality();
+        o1.cardinality();
+        o2.get(2);
+
+        Neon.writeObjectToString(strings);
+        final Object c = new Carrot();
+        final Object v = Neon.deepDownCast(c);
+        final Object o = Neon.deepDownCast(Neon.deepDownCast(c));
+        final Object vc = c;
+        final Object z = Neon.zombieCast(c, CarrotZombie.class);
+        System.out.println("lol");
+    }
+
     enum Car {Blue, Red}
 
     public enum Test {
@@ -120,18 +117,29 @@ class TestUnit {
     }
 
     public static class Vegetable {
-        int a = 1;
-        int b = 2;
-        int c = 3;
+        int roots = 16;
+        int vitamins = 124;
     }
+
+    public static class Zombie {
+        int brain = 10;
+        int vitamins = 12;
+    }
+
     public static class Carrot extends Vegetable {
-        int d = 4;
-        int e = 4;
+        int orangeRoot = 42;
+        int greenLeaf = 5;
+        int mold = 5;
+    }
+
+    public static class CarrotZombie extends Zombie {
+        int greenRoot = 42;
+        int mold = 12;
     }
 
     public static class Garden {
         Carrot f = new Carrot();
-//        Carrot g = new Carrot();
+        //        Carrot g = new Carrot();
         Carrot h = new Carrot();
     }
 

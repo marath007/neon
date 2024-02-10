@@ -1,9 +1,9 @@
-package engineer.number.neon.interfaces;
+package engineer.number.neon;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-public class HardFabricator extends Fabricator {
+class HardFabricator extends Fabricator {
     private final String s;
     private final int length;
     int index = 0;

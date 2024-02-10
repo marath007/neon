@@ -6,7 +6,7 @@
 
     <groupId>engineer.number</groupId>
     <artifactId>neon</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.1</version>
     <distributionManagement>
         <!-- ... Some other Distribution repository definitions -->
 
@@ -16,7 +16,7 @@
             <url>https://repo.repsy.io/mvn/number_engineer/neon</url>
         </repository>
 
-        <!-- ... Some other Distribution repository definitions -->
+        <!-- ... Some other Distribution resitory definitions -->
     </distributionManagement>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

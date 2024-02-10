@@ -1,6 +1,4 @@
-package engineer.number.neon.interfaces;
-
-import engineer.number.neon.NeonException;
+package engineer.number.neon;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-public class StreamFabricator extends Fabricator {
+class StreamFabricator extends Fabricator {
     private final InputStream s;
     int index = 0;
 

@@ -1,18 +1,5 @@
 package engineer.number.neon;
 
-import static engineer.number.neon.Neon.ClassMapper;
-import static engineer.number.neon.Neon.NeonConfig;
-import static engineer.number.neon.Neon.RECORD_SUPPORTED;
-import static engineer.number.neon.Neon.fieldsOfClass;
-import static engineer.number.neon.Neon.fillFieldList;
-import static engineer.number.neon.Neon.getRecordComponents;
-import static engineer.number.neon.Neon.getType;
-import static engineer.number.neon.Neon.isRecord;
-
-import engineer.number.neon.interfaces.Fabricator;
-import engineer.number.neon.interfaces.HardFabricator;
-import engineer.number.neon.interfaces.StreamFabricator;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
@@ -25,9 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static engineer.number.neon.Neon.*;
 
 
-public class Deneonizer {
+class Deneonizer {
     static ConcurrentHashMap<Class, RecordHelper> recordHelperHashMap = new ConcurrentHashMap<>();
     private transient Fabricator fabricator;
     ThreadLocal<HashMap<String, String>> lazyDecompression = new ThreadLocal<>();
@@ -87,6 +75,9 @@ public class Deneonizer {
         return _deneonize(c.getName());
     }
 
+    //    public <V> void galvanise(V v, String s) {
+//
+//    }
     private <T> T _deneonize(String className) throws InvalidNeonException, InvalidHeader {
         verifyVersion();
         lazyDecompression.set(new HashMap<>());
@@ -114,7 +105,7 @@ public class Deneonizer {
                 case "[Ljava.lang.Integer;"://untested
                     final Integer[] ints = new Integer[size];
                     for (int i = 0; i < size; i++) {
-                        ints[i] = Integer.parseInt(fabricator.readTextUntil(','));
+                        ints[i] = (Integer) Integer.parseInt(fabricator.readTextUntil(','));
                     }
                     return ints;
                 case "[I":
@@ -126,7 +117,7 @@ public class Deneonizer {
                 case "[Ljava.lang.Long;":
                     final Long[] longs = new Long[size];
                     for (int i = 0; i < size; i++) {
-                        longs[i] = Long.parseLong(fabricator.readTextUntil(','));
+                        longs[i] = (Long) Long.parseLong(fabricator.readTextUntil(','));
                     }
                     return longs;
                 case "[J":
@@ -138,7 +129,7 @@ public class Deneonizer {
                 case "[Ljava.lang.Double;":
                     final Double[] doubles = new Double[size];
                     for (int i = 0; i < size; i++) {
-                        doubles[i] = Double.parseDouble(fabricator.readTextUntil(','));
+                        doubles[i] = (Double) Double.parseDouble(fabricator.readTextUntil(','));
                     }
                     return doubles;
                 case "[D":
@@ -150,7 +141,7 @@ public class Deneonizer {
                 case "[Ljava.lang.Float;"://untested
                     final Float[] floats = new Float[size];
                     for (int i = 0; i < size; i++) {
-                        floats[i] = Float.parseFloat(fabricator.readTextUntil(','));
+                        floats[i] = (Float) Float.parseFloat(fabricator.readTextUntil(','));
                     }
                     return floats;
                 case "[F":
@@ -162,7 +153,7 @@ public class Deneonizer {
                 case "[Ljava.lang.Boolean;"://untested
                     final Boolean[] booleans = new Boolean[size];
                     for (int i = 0; i < size; i++) {
-                        booleans[i] = Boolean.parseBoolean(fabricator.readTextUntil(','));
+                        booleans[i] = (Boolean) Boolean.parseBoolean(fabricator.readTextUntil(','));
                     }
                     return booleans;
                 case "[Z":
@@ -176,7 +167,7 @@ public class Deneonizer {
                     String charString = fabricator.readBoundString();
                     final char[] chars = charString.toCharArray();
                     for (int i = 0; i < size; i++) {
-                        characters[i] = chars[i];
+                        characters[i] = (Character) chars[i];
                     }
                     return characters;
                 case "[C"://optimizable//untested
@@ -185,7 +176,7 @@ public class Deneonizer {
                     final Byte[] bytes = new Byte[size];
                     final byte[] bytes1 = fabricator.readXByte(size);
                     for (int i = 0; i < size; i++) {
-                        bytes[i] = bytes1[i];
+                        bytes[i] = (Byte) bytes1[i];
                     }
                     return bytes;
                 case "[B":
@@ -221,33 +212,33 @@ public class Deneonizer {
                 case "int":
                     String s = fabricator.readTextUntil('}');
                     try {
-                        return Integer.parseInt(s);
+                        return (Integer) Integer.parseInt(s);
                     } catch (NumberFormatException ignored) {
-                        return (int) Double.parseDouble(s);
+                        return (Integer) (int) Double.parseDouble(s);
                     }
                 case "java.lang.Long":
                 case "long":
                     s = fabricator.readTextUntil('}');
                     try {
-                        return Long.parseLong(s);
+                        return (Long) Long.parseLong(s);
                     } catch (NumberFormatException ignored) {
-                        return (long) Double.parseDouble(s);
+                        return (Long) (long)Double.parseDouble(s);
                     }
                 case "java.lang.Double":
                 case "double":
-                    return Double.parseDouble(fabricator.readTextUntil('}'));
+                    return (Double) Double.parseDouble(fabricator.readTextUntil('}'));
                 case "java.lang.Float":
                 case "float":
-                    return Float.parseFloat(fabricator.readTextUntil('}'));
+                    return (Float) Float.parseFloat(fabricator.readTextUntil('}'));
                 case "java.lang.Byte":
                 case "byte":
-                    return fabricator.readXByte(1)[0];
+                    return (Byte) fabricator.readXByte(1)[0];
                 case "java.lang.Boolean":
                 case "boolean":
-                    return Boolean.parseBoolean(fabricator.readTextUntil('}'));
+                    return (Boolean) Boolean.parseBoolean(fabricator.readTextUntil('}'));
                 case "java.lang.Character":
                 case "char":
-                    return fabricator.readCharBefore('}');
+                    return (Character) fabricator.readCharBefore('}');
                 case "java.lang.String":
                     return fabricator.readBoundString();
                 default:
@@ -292,9 +283,9 @@ public class Deneonizer {
                             }
                             oNew = createCustomClass(aClass);
                         }
-                        if (oNew instanceof Neon.PostInit) {
-                            ((Neon.PostInit) oNew).postInit();
-                        }
+//                        if (oNew instanceof Neon.PostInit) {
+//                            ((Neon.PostInit) oNew).postInit();
+//                        }
                         return oNew;
                     } catch (Exception e) {
 //                        e.printStackTrace();
@@ -357,6 +348,11 @@ public class Deneonizer {
         }
         return mapper.decompress(name);
     }
+
+    public <T> T deneonizeInto(T t, String s) {
+        return null;
+    }
+
 
     static class RecordHelper {
 

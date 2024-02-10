@@ -1,16 +1,13 @@
 package engineer.number.neon;
 
-import engineer.number.neon.interfaces.Deconstructor;
-import engineer.number.neon.interfaces.HardDeconstructor;
-import engineer.number.neon.interfaces.StreamDeconstructor;
-
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.function.Consumer;
 
 import static engineer.number.neon.Neon.fieldsOfClass;
 import static engineer.number.neon.Neon.fillFieldList;
@@ -25,9 +22,9 @@ import static engineer.number.neon.Neon.fillFieldList;
  * cant handle nulls in records
  */
 
-public class Neonizer {
-    private transient Deconstructor deConstructor;
+class Neonizer {
     ThreadLocal<HashMap<String, String>> lazyCompression = new ThreadLocal<>();
+    private transient Deconstructor deConstructor;
     private Neon.NeonConfig neonConfig = new Neon.NeonConfig(false);
     private Neon.ClassMapper mapper = new Neon.ClassMapper();
 
@@ -170,7 +167,7 @@ public class Neonizer {
                     deConstructor.append((Float) o);
                     break;
                 case "java.lang.Byte":
-                    deConstructor.append((Float) o);
+                    deConstructor.append((Byte) o);
                     break;
                 case "java.lang.Boolean":
                     deConstructor.append((Boolean) o);
@@ -273,7 +270,7 @@ public class Neonizer {
             if (!fieldsOfClass.containsKey(name)) {
                 fillFieldList(o);
             }
-            final Collection<Field> fields = fieldsOfClass.get(name).values();
+            final Collection<Field> fields = (fieldsOfClass).get(name).values();
             try {
                 for (Field field : fields) {
                     final Object o1;
@@ -292,7 +289,7 @@ public class Neonizer {
             } catch (IllegalAccessException e) {
                 throw new InvalidNeonException(e);
             }
-        }finally {
+        } finally {
             if (listener) {
                 ((Neon.SerializationEvent) o).serializationFinished();
             }
@@ -325,9 +322,22 @@ public class Neonizer {
         return deConstructor.toString();
     }
 
-    public String neonize(Object o, OutputStream stream) throws InvalidNeonException {
+    public void neonize(Object o, OutputStream stream) throws InvalidNeonException {
         deConstructor = new StreamDeconstructor(stream);
-        return _neonize(o);
+        _neonize(o);
+    }
+
+    public void neonizeBuffered(Object o, OutputStream stream) throws InvalidNeonException, IOException {
+        try (BufferedStreamDeconstructor ressource = (BufferedStreamDeconstructor) (deConstructor = new BufferedStreamDeconstructor(stream))) {
+            _neonize(o);
+        }
+    }
+    public void neonizeThreaded(Object o, OutputStream stream, Consumer<Boolean> onFinished ) {
+        try (BufferedStreamDeconstructor ressource = (BufferedStreamDeconstructor) (deConstructor = new ThreadedBufferedStreamDeconstructor(stream,onFinished))) {
+            _neonize(o);
+        } catch (InvalidNeonException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void closeIndent() {
@@ -358,7 +368,8 @@ public class Neonizer {
 
     private void openIndent(Object o) {
         deConstructor.append('{');
-        final String name = o.getClass().getName();
+        final String name;
+        name = o.getClass().getName();
         appendClassName(name);
         if (neonConfig.makePretty) {
             neonConfig.indentLevel++;
@@ -394,6 +405,25 @@ public class Neonizer {
             deConstructor.append(']');
         }
     }
+
+    StringBuilder neonizeBuilder(Object o) throws InvalidNeonException {
+        deConstructor = new HardDeconstructor();
+        return _neonizeBuilder(o);
+    }
+
+    private StringBuilder _neonizeBuilder(Object o) throws InvalidNeonException {
+        lazyCompression.set(new HashMap<>());
+        deConstructor.appendInternalString(SerializationVersion.V2);
+        openIndent(o);
+        openIndent();
+        appendUnknownObjectContent(o);
+        closeIndent();
+        closeIndent();
+        return deConstructor.sb();
+    }
+
+
+
 
     static class SerializationVersion {
         @Deprecated

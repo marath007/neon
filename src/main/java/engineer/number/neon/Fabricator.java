@@ -1,4 +1,4 @@
-package engineer.number.neon.interfaces;
+package engineer.number.neon;
 
 import java.util.function.Consumer;
 

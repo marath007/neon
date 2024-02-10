@@ -1,6 +1,6 @@
 package engineer.number.neon;
 
-public class ByteUtil {
+class ByteUtil {
     /* ========================= */
     /* "primitive type --> byte[] data" Methods */
     /* ========================= */
