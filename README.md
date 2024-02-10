@@ -58,22 +58,30 @@ private static void example() throws InvalidHeader, InvalidNeonException, IOExce
 }
 ```
 
-Design Rules
+## Design Rules
+
 To ensure compatibility with Neon, a class must:
 
-Have a zero-argument constructor (either explicitly defined or implied by default).
-Implement Neon.PostInit for custom post-initialization logic, if needed.
-What Can Be Serialized
-Non-transient and non-static fields
-Final fields (yes, they can somehow be serialized)
-Primitives directly via Neon.writeObjectToString(1)
-Arrays, Maps, Collections (limitations apply)
-Classes with generics
-Inner classes, enums, records, and more
-Limitations
-Serialization does not support interfaces or abstract classes.
-Null values in arrays, collections, or maps can cause serialization exceptions.
-Known Issues
-Null elements in data structures cause exceptions during serialization.
-Objects created by Neon revert to default field values if set to null previously.
+- Have a zero-argument constructor (either explicitly defined or implied by default).
+- Implement `Neon.PostInit` for custom post-initialization logic, if needed.
+
+## What Can Be Serialized
+
+- Non-transient and non-static fields
+- Final fields (yes, they can somehow be serialized)
+- Primitives directly via `Neon.writeObjectToString(1)`
+- Arrays, Maps, Collections (limitations apply)
+- Classes with generics
+- Inner classes, enums, records, and more
+
+## Limitations
+
+- Serialization does not support interfaces or abstract classes.
+- Null values in arrays, collections, or maps cause serialization exceptions.
+
+## Known Issues
+
+- Null elements in data structures cause exceptions during serialization.
+- Object fields created by Neon revert to default field values if set to null previously.
+
 
