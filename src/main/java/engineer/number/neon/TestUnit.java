@@ -10,6 +10,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Optional;
 
+import static engineer.number.neon.Neon.deepClonize;
 import static engineer.number.neon.Neon.ignoreTransientClasses;
 
 class TestUnit {
@@ -72,6 +73,11 @@ class TestUnit {
     }
 
     public static void main(String[] args) throws InvalidNeonException, InvalidHeader {
+        EggNog eggNog=new EggNog(true);
+        EggNog eggNog2=deepClonize(eggNog);
+
+
+
         final String[] strings = new String[]{"egg", null, "nog"};
         ignoreTransientClasses.add(BitSet.class);
         final int pow = (int) Math.pow(7, 7);

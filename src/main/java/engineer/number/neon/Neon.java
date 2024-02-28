@@ -104,6 +104,9 @@ public class Neon {
     static public <T> T deepClone(T t) throws InvalidNeonException, InvalidHeader {
         return new Deneonizer().deneonize(new Neonizer().neonize(t));
     }
+    static public <T> T deepClonize(T t) throws InvalidNeonException {
+        return new Clonizer().clonize(t);
+    }
 
     static public <T> T deepDownCast(T t) throws InvalidNeonException, InvalidHeader {
         return new Deneonizer().deneonize(new Neonizer().neonize(t), t.getClass().getSuperclass());

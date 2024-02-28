@@ -22,7 +22,7 @@ class ThreadedBufferedStreamDeconstructor extends BufferedStreamDeconstructor im
     protected void flushStringBuilder() {
         if (sb.length() > 0) {
             final StringBuilder sb1 = sb;
-            sb=new StringBuilder(BUFFER_SIZE); // Clear the StringBuilder
+            sb = new StringBuilder(BUFFER_SIZE); // Clear the StringBuilder
             executor.submit(() -> {
                 try {
                     final byte[] bytes = sb1.toString().getBytes(StandardCharsets.UTF_8);
@@ -35,7 +35,7 @@ class ThreadedBufferedStreamDeconstructor extends BufferedStreamDeconstructor im
     }
 
     @Override
-    public void close()  {
+    public void close() {
         super.close();
         executor.submit(() -> {
             try {
